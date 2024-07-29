@@ -1,0 +1,410 @@
+Enhancing Your Book Store MERN Project
+Great job on building the CRUD functionality for your book store! Here are some potential enhancements to consider for your project:
+
+User Authentication and Authorization
+User Registration and Login: Implement user registration, login, and authentication using a suitable authentication method (e.g., JWT, session-based).
+Role-Based Access Control (RBAC): Define different user roles (e.g., admin, user) and restrict access to certain features based on the user's role.
+User Profiles: Allow users to create profiles with personal information, bookmarked books, reading history, etc.
+Additional Book Features
+Book Reviews and Ratings: Enable users to write reviews and rate books.
+Book Recommendations: Implement basic recommendation systems based on user preferences or popular books.
+Book Categories: Categorize books based on genre, author, or other criteria.
+Book Search: Implement a search functionality to allow users to find books by title, author, or other keywords.
+Book Covers: Display book covers for a better user experience.
+Shopping Cart: Allow users to add books to a shopping cart and proceed to checkout.
+Payment Integration: Integrate a payment gateway (e.g., Stripe, PayPal) for online purchases.
+User Interface Enhancements
+Responsive Design: Make your application responsive to different screen sizes (desktop, tablet, mobile).
+Improved User Experience: Optimize the user interface with clear navigation, intuitive interactions, and visually appealing design.
+Error Handling: Provide informative error messages to the user.
+Loading Indicators: Display loading indicators while fetching data or performing actions.
+Advanced Features
+Real-time Updates: Use WebSockets or similar technologies to provide real-time updates for features like chat or notifications.
+Social Sharing: Allow users to share books on social media platforms.
+Bookmarked Books: Implement a feature to allow users to bookmark books for later reading.
+Reading Lists: Enable users to create reading lists and organize books.
+Analytics and Reporting: Track user behavior and generate reports on popular books, user demographics, etc.
+Technical Enhancements
+Code Optimization: Improve code efficiency and performance.
+Testing: Write unit and integration tests to ensure code quality.
+Deployment: Deploy your application to a hosting platform (e.g., Heroku, AWS, Netlify).
+Security: Implement security measures to protect user data and prevent vulnerabilities.
+
+---
+
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import RingLoader from "react-spinners/RingLoader";
+
+const Home = () => {
+const [books, setBooks] = useState([]);
+const [loading, setLoading] = useState(false);
+const [search, setSearch] = useState("");
+const [isOpen, setIsOpen] = useState(false);
+const [selectedOption, setSelectedOption] = useState("titleAsc"); // Default selected option
+
+const options = [
+{ value: "titleAsc", label: "Title Ascending" },
+{ value: "titleDesc", label: "Title Descending" },
+{ value: "priceAsc", label: "Price Ascending" },
+{ value: "priceDesc", label: "Price Descending" },
+];
+const handleItemClick = (option) => {
+setSelectedOption(option.value);
+setIsOpen(false);
+onSelect(option.value); // Call the provided onSelect callback
+};
+const handleNormal = () => {
+setSearch("");
+};
+const fetchData = async () => {
+setLoading(true);
+try {
+const response = await fetch("http://127.0.0.1:3000/books?sort=-price");
+
+      const responseData = await response.json();
+      console.log(responseData);
+      setBooks(responseData);
+      console.log(typeof books);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
+    }
+
+};
+useEffect(() => {
+fetchData();
+}, []);
+
+console.log(search);
+return (
+<>
+<div className="bg-[#212121] ">
+<div className="container mx-auto mt-4 p-4 md:p-6 lg:p-8">
+<h1 className="text-3xl font-bold flex justify-center text-[#FFFFFF] mb-10">
+Book Store
+</h1>
+{loading ? (
+<div className="flex justify-center align-middle item-center">
+<RingLoader size={200} />
+</div>
+) : (
+<>
+<div className="max-w-md mx-auto p-4 ">
+<label
+                  htmlFor="default-search"
+                  className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
+                >
+Search
+</label>
+<div className="relative">
+<div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+<svg
+                      className="w-4 h-4 text-gray-500 dark:text-gray-400"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 20 20"
+                    >
+<path
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+                      />
+</svg>
+</div>
+<input
+value={search}
+onChange={(e) => setSearch(e.target.value)}
+type="search"
+id="default-search"
+className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 bg-[#333333] dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+placeholder="Search Books by Name"
+required
+/>
+</div>
+<div className="p-4 flex justify-center ">
+<button
+                    className=" text-white   bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                    onClick={handleNormal}
+                  >
+Reset Books
+</button>
+</div>
+</div>
+<div className="flex justify-center items-center pb-4">
+<div className="relative inline-block text-left">
+<button
+type="button"
+className="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+id="dropdownDefaultButton"
+data-dropdown-toggle="dropdown"
+aria-expanded="false"
+onClick={() => setIsOpen(!isOpen)} >
+{selectedOption}
+<svg
+                      className="w-5 h-5 ml-2 -mr-1"
+                      aria-hidden="true"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+<path
+                        fill-rule="evenodd"
+                        d="M5.293 7.293a1 1 0 011.414 1.414L10 9.586l3.293 3.293a1 1 0 11-1.414 1.414L10 10.414l-3.293 3.293a1 1 0 01-1.414-1.414L8.586 9l-3.293-3.293a1 1 0 011.414-1.414L8.586 7.586l3.293-3.293z"
+                        clip-rule="evenodd"
+                      ></path>
+</svg>
+</button>
+{isOpen && (
+<div
+                      className="z-10 absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none"
+                      role="menu"
+                      aria-orientation="vertical"
+                      aria-labelledby="dropdownDefaultButton"
+                    >
+<div className="py-1" role="none">
+{options.map((option) => (
+<a
+key={option.value}
+href="#"
+className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"
+role="menuitem"
+onClick={() => handleItemClick(option)} >
+{option.label}
+</a>
+))}
+</div>
+</div>
+)}
+</div>
+</div>
+<table className="w-full border-collapse shadow-md rounded-lg overflow-hidden bg-[#333333]">
+<thead className="bg-[#444444]">
+<tr className="text-left">
+<th className="p-3 font-medium text-lg text-[#FFFFFF]">
+Title
+</th>
+<th className="p-3 font-medium text-lg text-[#FFFFFF]">
+Author
+</th>
+<th className="p-3 font-medium text-lg text-[#FFFFFF]">
+ISBN
+</th>
+<th className="p-3 font-medium text-lg text-[#FFFFFF]">
+Pages
+</th>
+
+                    <th className="p-3 font-medium text-lg text-[#FFFFFF]">
+                      Price
+                    </th>
+                    <th className="p-3 font-medium text-lg text-[#FFFFFF] flex justify-center">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {books
+                    .filter((item) => {
+                      return search.toLowerCase() === ""
+                        ? item
+                        : item.title
+                            .toLowerCase()
+                            .includes(search.toLowerCase());
+                    })
+                    .map((book) => (
+                      <tr
+                        key={book._id}
+                        className="border-b border-gray-200 hover:bg-[#444444]"
+                      >
+                        <td className="p-3 text-[#FFFFFF]">{book.title}</td>
+                        <td className="p-3 text-[#FFFFFF]">{book.author}</td>
+                        <td className="p-3 text-[#FFFFFF]">{book.isbn}</td>
+                        <td className="p-3  text-[#FFFFFF]">
+                          {book.pageCount}
+                        </td>
+                        <td className="p-3  text-[#FFFFFF]">{book.price}$</td>
+
+                        <td className="p-3 flex justify-center">
+                          <Link
+                            to={`/books/update/${book._id}`}
+                            className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded"
+                          >
+                            Update
+                          </Link>
+                          <Link
+                            to={`/books/delete/${book._id}`}
+                            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded ml-2"
+                          >
+                            Delete
+                          </Link>
+                          <Link
+                            to={`/books/details/${book._id}`}
+                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2"
+                          >
+                            Details
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+              <div className="flex justify-center items-center pt-5">
+                <Link
+                  to={"/books/create"}
+                  className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                >
+                  Add Book
+                </Link>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </>
+
+);
+};
+export default Home;
+// import React, { useState, useEffect } from "react";
+// import { Link } from "react-router-dom";
+
+// const Home = () => {
+// const [books, setBooks] = useState([]);
+// const [searchQuery, setSearchQuery] = useState("");
+// const [currentPage, setCurrentPage] = useState(1);
+// const [itemsPerPage, setItemsPerPage] = useState(10);
+// const [sortOrder, setSortOrder] = useState("asc");
+
+// useEffect(() => {
+// fetchBooks();
+// }, []);
+
+// const fetchBooks = async () => {
+// const response = await fetch("http://localhost:3000/books");
+// const data = await response.json();
+// setBooks(data);
+// };
+
+// const handleSearch = (e) => {
+// setSearchQuery(e.target.value);
+// };
+
+// const filteredBooks = books.filter((book) => {
+// const title = book.title.toLowerCase();
+// const isbn = book.isbn.toLowerCase();
+// const searchQueryLowercase = searchQuery.toLowerCase();
+
+// return (
+// title.includes(searchQueryLowercase) ||
+// isbn.includes(searchQueryLowercase)
+// );
+// });
+
+// const sortedBooks = filteredBooks.sort((a, b) => {
+// if (sortOrder === "asc") {
+// return a.title.localeCompare(b.title);
+// } else {
+// return b.title.localeCompare(a.title);
+// }
+// });
+
+// const paginatedBooks = sortedBooks.slice(
+// (currentPage - 1) _ itemsPerPage,
+// currentPage _ itemsPerPage
+// );
+
+// const handlePageChange = (page) => {
+// setCurrentPage(page);
+// };
+
+// const handleSortChange = (e) => {
+// setSortOrder(e.target.value);
+// };
+
+// return (
+// <div>
+// <div className="search-bar">
+// <label>Search:</label>
+// <input
+// type="text"
+// value={searchQuery}
+// onChange={handleSearch}
+// placeholder="Search by title or ISBN"
+// />
+// </div>
+// <div className="sort-bar">
+// <label>Sort by:</label>
+// <select value={sortOrder} onChange={handleSortChange}>
+// <option value="asc">Ascending</option>
+// <option value="desc">Descending</option>
+// </select>
+// </div>
+// <table>
+// <thead>
+// <tr>
+// <th>Title</th>
+// <th>Author</th>
+// <th>ISBN</th>
+// <th>Actions</th>
+// </tr>
+// </thead>
+// <tbody>
+// {paginatedBooks.map((book) => (
+// <tr key={book._id}>
+// <td>{book.title}</td>
+// <td>{book.author}</td>
+// <td>{book.isbn}</td>
+// <td className="p-3 flex justify-center">
+// <Link
+// to={`/books/update/${book._id}`}
+// className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded"
+// >
+// Update
+// </Link>
+// <Link
+// to={`/books/delete/${book._id}`}
+// className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded ml-2"
+// >
+// Delete
+// </Link>
+// <Link
+// to={`/books/details/${book._id}`}
+// className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded ml-2"
+// >
+// Details
+// </Link>
+// </td>
+// </tr>
+// ))}
+// </tbody>
+// </table>
+// <div className="pagination">
+// {Array(Math.ceil(sortedBooks.length / itemsPerPage))
+// .fill(0)
+// .map((\_, index) => (
+// <button
+// key={index}
+// onClick={() => handlePageChange(index + 1)}
+// className={currentPage === index + 1 ? "active" : ""}
+// >
+// {index + 1}
+// </button>
+// ))}
+// </div>
+// <div className="flex justify-center items-center pt-5">
+// <Link
+// to={"/books/create"}
+// className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+// >
+// Add Book
+// </Link>
+// </div>
+// </div>
+// );
+// };
+
+// export default Home;
